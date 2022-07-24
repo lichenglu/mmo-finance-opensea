@@ -1,5 +1,5 @@
 # [START appengine_websockets_yaml]
-runtime: nodejs
+runtime: nodejs16
 
 # Use only a single instance.
 manual_scaling:
