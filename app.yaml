@@ -1,0 +1,10 @@
+# [START appengine_websockets_yaml]
+runtime: nodejs
+
+# Use only a single instance.
+manual_scaling:
+  instances: 1
+
+network:
+  session_affinity: true
+# [END appengine_websockets_yaml]
