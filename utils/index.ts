@@ -1,4 +1,4 @@
-const sdk = require('api')('@opensea/v1.0#mxj1ql5k6c0il');
+import fetch from 'node-fetch';
 import { addNFTItems } from '../firestore/operations'
 
 export async function getAssets(collection: string, cursor?: string) {
@@ -18,6 +18,7 @@ export async function getAssets(collection: string, cursor?: string) {
         options
     )
         .then(res => res.json())
+
     return res
 }
 
@@ -26,15 +27,27 @@ export async function getAssetsExaustively(collection: string) {
     console.log(`Fetching page ${counter}...`)
     
     let res = await getAssets(collection)
+    const assets = res.assets.map(formatItem)
     
-    await addNFTItems(res.assets)
+    await addNFTItems(assets)
     
     while (res.next) {
         counter += 1
         console.log(`Fetching page ${counter}...`)
         res = await getAssets(collection, res.next)
-        await addNFTItems(res.assets)
+        const assets = res.assets.map(formatItem)
+        await addNFTItems(assets)
     }
 
     console.log('No more assets to fetch')
+}
+
+function formatItem(item: {
+    [key: string]: any,
+    sell_orders?: { listing_time: number, current_price: number }[], 
+    seaport_sell_orders?: { listing_time: number, current_price: number }[] 
+}) {
+    item.current_price = (item.seaport_sell_orders?.[0]?.current_price ?? item.sell_orders?.[0]?.current_price) ?? null
+    item.listing_time = (item.seaport_sell_orders?.[0]?.listing_time ?? item.sell_orders?.[0]?.listing_time) ?? null
+    return item
 }

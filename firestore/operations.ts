@@ -11,7 +11,6 @@ export async function addNFTItem(item: NFTAsset) {
 
 export async function addNFTItems(items: NFTAsset[]) {
     await Promise.all(items.map(async item => {
-        const nftRef = db.collection('OpenSeaPudgyPenguins').doc(item.token_id);
-        await nftRef.set(item, { merge: true });
+        await addNFTItem(item)
     }))
 }
