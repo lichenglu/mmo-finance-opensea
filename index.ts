@@ -1,19 +1,19 @@
-import express = require('express');
+import express = require('express')
 import { CronJob } from 'cron'
-import { OpenSeaStreamClient } from '@opensea/stream-js';
-import { WebSocket } from 'ws'; 
+import { OpenSeaStreamClient } from '@opensea/stream-js'
+import { WebSocket } from 'ws'
 
-import { getAssetsExaustively } from './utils'
+import { getAssetsExaustively, updateToken } from './utils'
 
-const PORT = process.env.PORT || 8080;
-const app = express();
+const PORT = process.env.PORT || 8080
+const app = express()
 
 app.get('/', (req, res) => {
-  res.send('🎉 Hello World! 🎉');
-});
+  res.send('🎉 Hello World! 🎉')
+})
 
 const server = app.listen(PORT, async () => {
-  console.log(`App listening on port ${PORT}`);
+  console.log(`App listening on port ${PORT}`)
 
   const collectionSlug = 'pudgypenguins'
 
@@ -22,7 +22,7 @@ const server = app.listen(PORT, async () => {
   //   '0 0 */24 * * *',
   //   async function() {
   //     console.log('Running job...getting assets');
-  //     await getAssetsExaustively(collectionSlug)
+  // await getAssetsExaustively(collectionSlug)
   //   },
   //   function() {
   //     console.log(`Completed ${new Date()}`)
@@ -34,19 +34,53 @@ const server = app.listen(PORT, async () => {
   const client = new OpenSeaStreamClient({
     token: 'e8aafbf2081c4489a5ae3539a47d82f3',
     connectOptions: {
-      transport: WebSocket
-    }
-  });
+      transport: WebSocket,
+    },
+  })
 
   client.onItemMetadataUpdated(collectionSlug, (event) => {
     // handle event
     console.log(event)
-  });
+    const splitEvent = event.payload.item.nft_id.split('/')
+    const collection = splitEvent[1]
+    const tokenID = splitEvent[2]
+    updateToken(collection, tokenID)
+
+    console.log('tokenID is:', tokenID, collection)
+  })
 
   client.onItemListed(collectionSlug, (event) => {
     // handle event
     console.log(event)
-  });
-});
+    const splitEvent = event.payload.item.nft_id.split('/')
+    const collection = splitEvent[1]
+    const tokenID = splitEvent[2]
+    updateToken(collection, tokenID)
 
-module.exports = server;
+    console.log('tokenID is:', tokenID, collection)
+  })
+
+  client.onItemSold(collectionSlug, (event) => {
+    // handle event
+    console.log(event)
+    const splitEvent = event.payload.item.nft_id.split('/')
+    const collection = splitEvent[1]
+    const tokenID = splitEvent[2]
+    updateToken(collection, tokenID)
+
+    console.log('tokenID is:', tokenID, collection)
+  })
+
+  client.onItemCancelled(collectionSlug, (event) => {
+    // handle event
+    console.log(event)
+    const splitEvent = event.payload.item.nft_id.split('/')
+    const collection = splitEvent[1]
+    const tokenID = splitEvent[2]
+    updateToken(collection, tokenID)
+
+    console.log('tokenID is:', tokenID, collection)
+  })
+})
+
+module.exports = server
