@@ -49,5 +49,9 @@ function formatItem(item: {
 }) {
     item.current_price = (item.seaport_sell_orders?.[0]?.current_price ?? item.sell_orders?.[0]?.current_price) ?? null
     item.listing_time = (item.seaport_sell_orders?.[0]?.listing_time ?? item.sell_orders?.[0]?.listing_time) ?? null
+
+    if (item.current_price) {
+        item.current_price = Number(item.current_price)
+    }
     return item
 }
