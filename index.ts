@@ -17,6 +17,15 @@ app.get('/', (req, res) => {
   res.send('🎉 Hello World! 🎉')
 })
 
+function handleEvent(event) {
+  console.log(event)
+  const splitEvent = event.payload.item.nft_id.split('/')
+  const collection = splitEvent[1]
+  const tokenID = splitEvent[2]
+  updateToken(collection, tokenID)
+
+  console.log('tokenID is:', tokenID, collection)
+}
 dayjs.extend(utc)
 dayjs.extend(timezone)
 
@@ -46,21 +55,23 @@ const server = app.listen(PORT, async () => {
 
   const openseaOfferJob = new CronJob(
     '*/60 * * * * *',
-    async function() {
+    async function () {
       try {
-        console.log('Running job...getting assets');
+        console.log('Running job...getting assets')
         const tokenAddress = '0xbd3531da5cf5857e7cfaa92426877b022e612cf8'
-  
+
         const res = await api.get(`/api/v1/asset/${tokenAddress}/0/offers`)
         if (res.ok) {
           // @ts-ignore
-          const advancedOffers = res.data.seaport_offers.filter((bid: any) => bid.side === 'bid' && bid.order_type === 'criteria')
+          const advancedOffers = res.data.seaport_offers.filter(
+            (bid: any) => bid.side === 'bid' && bid.order_type === 'criteria'
+          )
           const currentOffers = await getAdvancedOffers()
-          const now = dayjs(undefined, { utc: true, })
+          const now = dayjs(undefined, { utc: true })
           const newOffers = advancedOffers.filter((offer: any) => !currentOffers[offer.order_hash])
-          newOffers.forEach(offer => {
+          newOffers.forEach((offer) => {
             currentOffers[offer.order_hash] = offer
-          }) 
+          })
           const updatedOffers = []
           const offersToBeRemoved = []
           Object.entries(currentOffers).forEach(([key, value]: [any, any]) => {
@@ -70,7 +81,7 @@ const server = app.listen(PORT, async () => {
               offersToBeRemoved.push(value)
             }
           })
-          await removeAdvancedOffers(offersToBeRemoved);
+          await removeAdvancedOffers(offersToBeRemoved)
           await setAdvancedOffers(updatedOffers)
           console.log(`Completed ${new Date()}`)
         }
@@ -78,15 +89,15 @@ const server = app.listen(PORT, async () => {
         console.log(err)
       }
     },
-    function() {
+    function () {
       console.log(`Completed ${new Date()}`)
     },
     true,
     'America/Chicago'
-  );
+  )
 
   testFSConnection()
-  
+
   const client = new OpenSeaStreamClient({
     token: 'e8aafbf2081c4489a5ae3539a47d82f3',
     connectOptions: {
@@ -95,47 +106,19 @@ const server = app.listen(PORT, async () => {
   })
 
   client.onItemMetadataUpdated(collectionSlug, (event) => {
-    // handle event
-    console.log(event)
-    const splitEvent = event.payload.item.nft_id.split('/')
-    const collection = splitEvent[1]
-    const tokenID = splitEvent[2]
-    updateToken(collection, tokenID)
-
-    console.log('tokenID is:', tokenID, collection)
+    handleEvent(event)
   })
 
   client.onItemListed(collectionSlug, (event) => {
-    // handle event
-    console.log(event)
-    const splitEvent = event.payload.item.nft_id.split('/')
-    const collection = splitEvent[1]
-    const tokenID = splitEvent[2]
-    updateToken(collection, tokenID)
-
-    console.log('tokenID is:', tokenID, collection)
+    handleEvent(event)
   })
 
   client.onItemSold(collectionSlug, (event) => {
-    // handle event
-    console.log(event)
-    const splitEvent = event.payload.item.nft_id.split('/')
-    const collection = splitEvent[1]
-    const tokenID = splitEvent[2]
-    updateToken(collection, tokenID)
-
-    console.log('tokenID is:', tokenID, collection)
+    handleEvent(event)
   })
 
   client.onItemCancelled(collectionSlug, (event) => {
-    // handle event
-    console.log(event)
-    const splitEvent = event.payload.item.nft_id.split('/')
-    const collection = splitEvent[1]
-    const tokenID = splitEvent[2]
-    updateToken(collection, tokenID)
-
-    console.log('tokenID is:', tokenID, collection)
+    handleEvent(event)
   })
 })
 

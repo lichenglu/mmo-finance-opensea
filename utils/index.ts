@@ -55,13 +55,19 @@ export async function getAssetsExaustively(collection: string) {
 function formatItem(item: {
   [key: string]: any
   sell_orders?: { listing_time: number; current_price: number }[]
-  seaport_sell_orders?: { listing_time: number; current_price: number }[]
+  seaport_sell_orders?: { listing_time: number; current_price: number; side: string | number; protocol_data: any }[]
 }) {
-  item.current_price = item.seaport_sell_orders?.[0]?.current_price ?? item.sell_orders?.[0]?.current_price ?? null
-  item.listing_time = item.seaport_sell_orders?.[0]?.listing_time ?? item.sell_orders?.[0]?.listing_time ?? null
-
-  if (item.current_price) {
-    item.current_price = Number(item.current_price)
+  item.listing_time = null
+  item.current_price = null
+  if (item.seaport_sell_orders) {
+    if (
+      item.seaport_sell_orders[0].protocol_data.parameters.consideration[0].token ===
+        '0x0000000000000000000000000000000000000000' &&
+      item.seaport_sell_orders[0].side === 'ask'
+    ) {
+      item.current_price = Number(item.seaport_sell_orders[0].current_price)
+      item.listing_time = item.seaport_sell_orders[0].listing_time
+    }
   }
   return item
 }
