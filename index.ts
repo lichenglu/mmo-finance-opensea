@@ -39,7 +39,7 @@ const server = app.listen(PORT, async () => {
   //   '0 0 */24 * * *',
   //   async function() {
   //     console.log('Running job...getting assets');
-  await getAssetsExaustively(collectionSlug)
+  // await getAssetsExaustively(collectionSlug)
   //   },
   //   function() {
   //     console.log(`Completed ${new Date()}`)
