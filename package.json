@@ -15,7 +15,7 @@
     "posttest": "npm run lint",
     "lint": "tslint -p .",
     "start": "node ./index.js",
-    "start:dev": "export GOOGLE_APPLICATION_CREDENTIALS='./service_account.json' && nodemon ./index.ts",
+    "start:dev": "npm run gcp-build && export GOOGLE_APPLICATION_CREDENTIALS='./service_account.json' && nodemon ./index.ts",
     "gcp-build": "tsc -p .",
     "deploy": "gcloud app deploy"
   },
@@ -23,10 +23,11 @@
     "@opensea/stream-js": "^0.0.20",
     "@types/node": "^14.14.7",
     "api": "^4.5.1",
+    "apisauce": "^2.1.6",
     "cron": "^2.1.0",
+    "dayjs": "^1.11.5",
     "express": "^4.16.3",
     "firebase-admin": "^11.0.0",
-    "node-fetch": "^2.6.7",
     "typescript": "^4.0.0",
     "ws": "^8.8.1"
   },
