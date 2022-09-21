@@ -12,6 +12,16 @@ app.get('/', (req, res) => {
   res.send('🎉 Hello World! 🎉')
 })
 
+function handleEvent(event) {
+  console.log(event)
+  const splitEvent = event.payload.item.nft_id.split('/')
+  const collection = splitEvent[1]
+  const tokenID = splitEvent[2]
+  updateToken(collection, tokenID)
+
+  console.log('tokenID is:', tokenID, collection)
+}
+
 const server = app.listen(PORT, async () => {
   console.log(`App listening on port ${PORT}`)
 
@@ -22,7 +32,7 @@ const server = app.listen(PORT, async () => {
   //   '0 0 */24 * * *',
   //   async function() {
   //     console.log('Running job...getting assets');
-  // await getAssetsExaustively(collectionSlug)
+  await getAssetsExaustively(collectionSlug)
   //   },
   //   function() {
   //     console.log(`Completed ${new Date()}`)
@@ -39,47 +49,19 @@ const server = app.listen(PORT, async () => {
   })
 
   client.onItemMetadataUpdated(collectionSlug, (event) => {
-    // handle event
-    console.log(event)
-    const splitEvent = event.payload.item.nft_id.split('/')
-    const collection = splitEvent[1]
-    const tokenID = splitEvent[2]
-    updateToken(collection, tokenID)
-
-    console.log('tokenID is:', tokenID, collection)
+    handleEvent(event)
   })
 
   client.onItemListed(collectionSlug, (event) => {
-    // handle event
-    console.log(event)
-    const splitEvent = event.payload.item.nft_id.split('/')
-    const collection = splitEvent[1]
-    const tokenID = splitEvent[2]
-    updateToken(collection, tokenID)
-
-    console.log('tokenID is:', tokenID, collection)
+    handleEvent(event)
   })
 
   client.onItemSold(collectionSlug, (event) => {
-    // handle event
-    console.log(event)
-    const splitEvent = event.payload.item.nft_id.split('/')
-    const collection = splitEvent[1]
-    const tokenID = splitEvent[2]
-    updateToken(collection, tokenID)
-
-    console.log('tokenID is:', tokenID, collection)
+    handleEvent(event)
   })
 
   client.onItemCancelled(collectionSlug, (event) => {
-    // handle event
-    console.log(event)
-    const splitEvent = event.payload.item.nft_id.split('/')
-    const collection = splitEvent[1]
-    const tokenID = splitEvent[2]
-    updateToken(collection, tokenID)
-
-    console.log('tokenID is:', tokenID, collection)
+    handleEvent(event)
   })
 })
 
