@@ -33,23 +33,27 @@ export async function updateToken(collection: string, tokenID: string) {
 }
 
 export async function getAssetsExaustively(collection: string) {
-  let counter = 0
-  console.log(`Fetching page ${counter}...`)
-
-  let res = await getAssets(collection)
-  const assets = res.assets.map(formatItem)
-
-  await addNFTItems(assets)
-
-  while (res.next) {
-    counter += 1
+  try {
+    let counter = 0
     console.log(`Fetching page ${counter}...`)
-    res = await getAssets(collection, res.next)
+  
+    let res = await getAssets(collection)
     const assets = res.assets.map(formatItem)
+  
     await addNFTItems(assets)
+  
+    while (res.next) {
+      counter += 1
+      console.log(`Fetching page ${counter}...`)
+      res = await getAssets(collection, res.next)
+      const assets = res.assets.map(formatItem)
+      await addNFTItems(assets)
+    }
+  
+    console.log('No more assets to fetch')
+  } catch (err) {
+    console.log(err)
   }
-
-  console.log('No more assets to fetch')
 }
 
 function formatItem(item: {

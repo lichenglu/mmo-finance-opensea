@@ -22,6 +22,7 @@
   "dependencies": {
     "@opensea/stream-js": "^0.0.20",
     "@types/node": "^14.14.7",
+    "abi-decoder": "^2.4.0",
     "api": "^4.5.1",
     "apisauce": "^2.1.6",
     "cron": "^2.1.0",
@@ -29,6 +30,7 @@
     "express": "^4.16.3",
     "firebase-admin": "^11.0.0",
     "typescript": "^4.0.0",
+    "web3": "^1.8.0",
     "ws": "^8.8.1"
   },
   "devDependencies": {
