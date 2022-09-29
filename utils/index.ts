@@ -1,6 +1,10 @@
 import fetch from 'node-fetch'
 import { addNFTItem, addNFTItems } from '../firestore/operations'
 
+function sleep(ms) {
+  return new Promise((resolve) => setTimeout(resolve, ms))
+}
+
 export async function getAssets(collection: string, cursor?: string) {
   const options = {
     method: 'GET',
@@ -18,7 +22,7 @@ export async function getAssets(collection: string, cursor?: string) {
   return res
 }
 
-export async function updateToken(collection: string, tokenID: string) {
+export async function updateToken(collection: string, tokenID: string, firestoreCollectionName: string) {
   const options = {
     method: 'GET',
     headers: { Accept: 'application/json', 'X-API-KEY': 'e8aafbf2081c4489a5ae3539a47d82f3' },
@@ -28,25 +32,32 @@ export async function updateToken(collection: string, tokenID: string) {
 
   const res = await fetch(url, options).then((res) => res.json())
   const item = formatItem(res)
-  await addNFTItem({ ...item, token_id: tokenID })
-  console.log('Updated tokenID:', tokenID)
+  await addNFTItem({ ...item, token_id: tokenID }, firestoreCollectionName)
+  console.log('Updated tokenID:', tokenID, firestoreCollectionName)
 }
 
-export async function getAssetsExaustively(collection: string) {
+export async function getAssetsExaustively(collection: string, firestoreCollectionName: string) {
   let counter = 0
+  console.log('Getting asses exhaustively for:', collection, 'and storing in:', firestoreCollectionName)
   console.log(`Fetching page ${counter}...`)
 
   let res = await getAssets(collection)
   const assets = res.assets.map(formatItem)
 
-  await addNFTItems(assets)
+  await addNFTItems(assets, firestoreCollectionName)
 
   while (res.next) {
+    await sleep(1000)
     counter += 1
     console.log(`Fetching page ${counter}...`)
     res = await getAssets(collection, res.next)
-    const assets = res.assets.map(formatItem)
-    await addNFTItems(assets)
+    if (res.assets) {
+      const assets = res.assets.map(formatItem)
+      await addNFTItems(assets, firestoreCollectionName)
+    } else {
+      console.log('request was throttled, waiting 3 seconds before trying again')
+      await sleep(3000)
+    }
   }
 
   console.log('No more assets to fetch')

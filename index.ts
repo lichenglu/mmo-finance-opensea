@@ -17,14 +17,28 @@ app.get('/', (req, res) => {
   res.send('🎉 Hello World! 🎉')
 })
 
-function handleEvent(event) {
-  console.log(event)
-  const splitEvent = event.payload.item.nft_id.split('/')
-  const collection = splitEvent[1]
-  const tokenID = splitEvent[2]
-  updateToken(collection, tokenID)
+function getFirestoreCollectionName(collectionSlug) {
+  switch (collectionSlug) {
+    case 'pudgypenguins':
+      return 'OpenSeaPudgyPenguins'
+    case 'lilpudgys':
+      return 'OpenSeaLilPudgys'
+    default:
+      return 'N/A'
+  }
+}
 
-  console.log('tokenID is:', tokenID, collection)
+function handleEvent(event, collectionSlug) {
+  console.log(event)
+  if (event.payload.item.nft_id) {
+    const splitEvent = event.payload.item.nft_id.split('/')
+    const collection = splitEvent[1]
+    const tokenID = splitEvent[2]
+    const firestoreCollectionName = getFirestoreCollectionName(collectionSlug)
+    updateToken(collection, tokenID, firestoreCollectionName)
+
+    console.log('tokenID is:', tokenID, collection)
+  }
 }
 dayjs.extend(utc)
 dayjs.extend(timezone)
@@ -32,14 +46,17 @@ dayjs.extend(timezone)
 const server = app.listen(PORT, async () => {
   console.log(`App listening on port ${PORT}`)
 
-  const collectionSlug = 'pudgypenguins'
+  // const collectionSlug = 'pudgypenguins'
+  const PudgyPenguinSlug = 'pudgypenguins'
+  const LilPudgySlug = 'lilpudgys'
 
+  const firestoreCollectionName = getFirestoreCollectionName(LilPudgySlug)
   // Cronjob that runs every 24 hours
   // const job = new CronJob(
   //   '0 0 */24 * * *',
   //   async function() {
   //     console.log('Running job...getting assets');
-  // await getAssetsExaustively(collectionSlug)
+  // await getAssetsExaustively(LilPudgySlug, firestoreCollectionName)
   //   },
   //   function() {
   //     console.log(`Completed ${new Date()}`)
@@ -105,20 +122,36 @@ const server = app.listen(PORT, async () => {
     },
   })
 
-  client.onItemMetadataUpdated(collectionSlug, (event) => {
-    handleEvent(event)
+  client.onItemMetadataUpdated(PudgyPenguinSlug, (event) => {
+    handleEvent(event, PudgyPenguinSlug)
   })
 
-  client.onItemListed(collectionSlug, (event) => {
-    handleEvent(event)
+  client.onItemListed(PudgyPenguinSlug, (event) => {
+    handleEvent(event, PudgyPenguinSlug)
   })
 
-  client.onItemSold(collectionSlug, (event) => {
-    handleEvent(event)
+  client.onItemSold(PudgyPenguinSlug, (event) => {
+    handleEvent(event, PudgyPenguinSlug)
   })
 
-  client.onItemCancelled(collectionSlug, (event) => {
-    handleEvent(event)
+  client.onItemCancelled(PudgyPenguinSlug, (event) => {
+    handleEvent(event, PudgyPenguinSlug)
+  })
+
+  client.onItemMetadataUpdated(LilPudgySlug, (event) => {
+    handleEvent(event, LilPudgySlug)
+  })
+
+  client.onItemListed(LilPudgySlug, (event) => {
+    handleEvent(event, LilPudgySlug)
+  })
+
+  client.onItemSold(LilPudgySlug, (event) => {
+    handleEvent(event, LilPudgySlug)
+  })
+
+  client.onItemCancelled(LilPudgySlug, (event) => {
+    handleEvent(event, LilPudgySlug)
   })
 })
 
