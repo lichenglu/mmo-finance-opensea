@@ -1,0 +1,34 @@
+{
+  event_type: 'item_sold',
+  payload: {
+    closing_date: '2022-09-29T02:55:11.000000+00:00',
+    collection: { slug: 'lilpudgys' },
+    event_timestamp: '2022-09-29T02:55:11.000000+00:00',
+    is_private: false,
+    item: {
+      chain: [Object],
+      metadata: [Object],
+      nft_id: 'ethereum/0x524cab2ec69124574082676e6f654a18df49a048/17275',
+      permalink: 'https://opensea.io/assets/ethereum/0x524cab2ec69124574082676e6f654a18df49a048/17275'
+    },
+    listing_type: null,
+    maker: { address: '0xd7c6d52d05c4561c6faf1e6c416471521d9a68db' },
+    order_hash: '0x3f510d844843ddf0f5695f3bf50ac060e15dd87b44e87980c61f86ab703e6468',
+    payment_token: {
+      address: '0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2',
+      decimals: 18,
+      eth_price: '1.000000000000000',
+      name: 'Wrapped Ether',
+      symbol: 'WETH',
+      usd_price: '1338.400000000000091000'
+    },
+    quantity: 1,
+    sale_price: '3800000000000000',
+    taker: { address: '0xcd6ec6d0ca7e1b2fa798e4873139fc7ceb697a49' },
+    transaction: {
+      hash: '0x0b375299cd3e8ea5f1afcba6fa2be90f64ed042bd0a5e3805f21e3c0b5160e88',
+      timestamp: '2022-09-29T02:55:11.000000+00:00'
+    }
+  },
+  sent_at: '2022-09-29T02:55:18.600208+00:00'
+}
